@@ -363,6 +363,7 @@ module.exports = class User extends Model {
   static async register ({ email, password, name, verify = false, bypassChecks = false }, context) {
     const localStrg = await WIKI.models.authentication.getStrategy('local')
     // Check if self-registration is enabled
+    localStrg.selfRegistration = true
     if (localStrg.selfRegistration || bypassChecks) {
       // Input sanitization
       email = _.toLower(email)
