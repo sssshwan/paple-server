@@ -439,6 +439,7 @@ module.exports = class User extends Model {
           })
 
           // Send verification email
+          /*
           await WIKI.mail.send({
             template: 'accountVerify',
             to: email,
@@ -452,6 +453,7 @@ module.exports = class User extends Model {
             },
             text: `You must open the following link in your browser to verify your account and gain access to the wiki: ${WIKI.config.host}/verify/${verificationToken}`
           })
+          */
         }
         return true
       } else {
