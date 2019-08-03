@@ -79,8 +79,9 @@ module.exports = {
      */
     async register(obj, args, context) {
       try {
-        await WIKI.models.users.register({ ...args, verify: true }, context)
+        const authResult = await WIKI.models.users.register({ ...args, verify: true }, context)
         return {
+          ...authResult,
           responseResult: graphHelper.generateSuccess('Registration success')
         }
       } catch (err) {

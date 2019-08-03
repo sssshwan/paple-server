@@ -297,69 +297,6 @@ module.exports = class User extends Model {
     }
   }
 
-  static async refreshToken(user) {
-    if (_.isSafeInteger(user)) {
-      user = await WIKI.models.users.query().findById(user).eager('groups').modifyEager('groups', builder => {
-        builder.select('groups.id', 'permissions')
-      })
-      if (!user) {
-        WIKI.logger.warn(`Failed to refresh token for user ${user}: Not found.`)
-        throw new WIKI.Error.AuthGenericError()
-      }
-    } else if (_.isNil(user.groups)) {
-      await user.$relatedQuery('groups').select('groups.id', 'permissions')
-    }
-
-    return {
-      token: jwt.sign({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        pictureUrl: user.pictureUrl,
-        timezone: user.timezone,
-        localeCode: user.localeCode,
-        defaultEditor: user.defaultEditor,
-        permissions: user.getGlobalPermissions(),
-        groups: user.getGroups()
-      }, {
-        key: WIKI.config.certs.private,
-        passphrase: WIKI.config.sessionSecret
-      }, {
-        algorithm: 'RS256',
-        expiresIn: WIKI.config.auth.tokenExpiration,
-        audience: WIKI.config.auth.audience,
-        issuer: 'urn:wiki.js'
-      }),
-      user
-    }
-  }
-
-  static async loginTFA(opts, context) {
-    if (opts.securityCode.length === 6 && opts.loginToken.length === 64) {
-      let result = await WIKI.redis.get(`tfa:${opts.loginToken}`)
-      if (result) {
-        let userId = _.toSafeInteger(result)
-        if (userId && userId > 0) {
-          let user = await WIKI.models.users.query().findById(userId)
-          if (user && user.verifyTFA(opts.securityCode)) {
-            return Promise.fromCallback(clb => {
-              context.req.logIn(user, clb)
-            }).return({
-              succeeded: true,
-              message: 'Login Successful'
-            }).catch(err => {
-              WIKI.logger.warn(err)
-              throw new WIKI.Error.AuthGenericError()
-            })
-          } else {
-            throw new WIKI.Error.AuthTFAFailed()
-          }
-        }
-      }
-    }
-    throw new WIKI.Error.AuthTFAInvalid()
-  }
-
   static async register ({ email, password, name, verify = false, bypassChecks = false }, context) {
     const localStrg = await WIKI.models.authentication.getStrategy('local')
     // Check if self-registration is enabled
@@ -423,45 +360,119 @@ module.exports = class User extends Model {
           tfaIsActive: false,
           isSystem: false,
           isActive: true,
-          isVerified: false
+          isVerified: true
         })
 
-        // Assign to group(s)
-        if (_.get(localStrg, 'autoEnrollGroups.v', []).length > 0) {
-          await newUsr.$relatedQuery('groups').relate(localStrg.autoEnrollGroups.v)
-        }
+      // Assign to group(s)
+      if (_.get(localStrg, 'autoEnrollGroups.v', []).length > 0) {
+        await user.$relatedQuery('groups').relate(localStrg.autoEnrollGroups.v)
+      }
 
-        if (verify) {
-          // Create verification token
-          const verificationToken = await WIKI.models.userKeys.generateToken({
-            kind: 'verify',
-            userId: newUsr.id
-          })
+        
+      return new Promise((resolve, reject) => {
+        const strInfo = _.find(WIKI.data.authentication, ['key', 'local'])
+        WIKI.auth.passport.authenticate('local', {
+          session: !strInfo.useForm,
+          scope: strInfo.scopes ? strInfo.scopes : null
+        }, async (err, newUsr, info) => {
+          if (err) { return reject(err) }
 
-          // Send verification email
-          /*
-          await WIKI.mail.send({
-            template: 'accountVerify',
-            to: email,
-            subject: 'Verify your account',
-            data: {
-              preheadertext: 'Verify your account in order to gain access to the wiki.',
-              title: 'Verify your account',
-              content: 'Click the button below in order to verify your account and gain access to the wiki.',
-              buttonLink: `${WIKI.config.host}/verify/${verificationToken}`,
-              buttonText: 'Verify'
-            },
-            text: `You must open the following link in your browser to verify your account and gain access to the wiki: ${WIKI.config.host}/verify/${verificationToken}`
+          return context.req.logIn(newUsr, { session: !strInfo.useForm }, async err => {
+            if (err) { return reject(err) }
+            const jwtToken = await WIKI.models.users.refreshToken(newUsr)
+            resolve({
+              jwt: jwtToken.token,
+              tfaRequired: false
+            })
           })
-          */
-        }
-        return true
-      } else {
-        throw new WIKI.Error.AuthAccountAlreadyExists()
+        })(context.req, context.res, () => {})
+      })
+
+
+        // Send verification email
+        /*
+        await WIKI.mail.send({
+          template: 'accountVerify',
+          to: email,
+          subject: 'Verify your account',
+          data: {
+            preheadertext: 'Verify your account in order to gain access to the wiki.',
+            title: 'Verify your account',
+            content: 'Click the button below in order to verify your account and gain access to the wiki.',
+            buttonLink: `${WIKI.config.host}/verify/${verificationToken}`,
+            buttonText: 'Verify'
+          },
+          text: `You must open the following link in your browser to verify your account and gain access to the wiki: ${WIKI.config.host}/verify/${verificationToken}`
+        })
+        */
       }
     } else {
-      throw new WIKI.Error.AuthRegistrationDisabled()
+      throw new WIKI.Error.AuthAccountAlreadyExists()
     }
+    throw new WIKI.Error.AuthRegistrationDisabled()
+  }
+
+  static async refreshToken(user) {
+    if (_.isSafeInteger(user)) {
+      user = await WIKI.models.users.query().findById(user).eager('groups').modifyEager('groups', builder => {
+        builder.select('groups.id', 'permissions')
+      })
+      if (!user) {
+        WIKI.logger.warn(`Failed to refresh token for user ${user}: Not found.`)
+        throw new WIKI.Error.AuthGenericError()
+      }
+    } //else if (_.isNil(user.groups)) {
+    //  await user.$relatedQuery('groups').select('groups.id', 'permissions')
+    //}
+
+    return {
+      token: jwt.sign({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        pictureUrl: user.pictureUrl,
+        timezone: user.timezone,
+        localeCode: user.localeCode,
+        defaultEditor: user.defaultEditor,
+        //permissions: user.getGlobalPermissions(),
+        //groups: user.getGroups()
+      }, {
+        key: WIKI.config.certs.private,
+        passphrase: WIKI.config.sessionSecret
+      }, {
+        algorithm: 'RS256',
+        expiresIn: WIKI.config.auth.tokenExpiration,
+        audience: WIKI.config.auth.audience,
+        issuer: 'urn:wiki.js'
+      }),
+      user
+    }
+  }
+
+  static async loginTFA(opts, context) {
+    if (opts.securityCode.length === 6 && opts.loginToken.length === 64) {
+      let result = await WIKI.redis.get(`tfa:${opts.loginToken}`)
+      if (result) {
+        let userId = _.toSafeInteger(result)
+        if (userId && userId > 0) {
+          let user = await WIKI.models.users.query().findById(userId)
+          if (user && user.verifyTFA(opts.securityCode)) {
+            return Promise.fromCallback(clb => {
+              context.req.logIn(user, clb)
+            }).return({
+              succeeded: true,
+              message: 'Login Successful'
+            }).catch(err => {
+              WIKI.logger.warn(err)
+              throw new WIKI.Error.AuthGenericError()
+            })
+          } else {
+            throw new WIKI.Error.AuthTFAFailed()
+          }
+        }
+      }
+    }
+    throw new WIKI.Error.AuthTFAInvalid()
   }
 
   static async getGuestUser () {

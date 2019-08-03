@@ -40,7 +40,7 @@ type AuthenticationMutation {
     email: String!
     password: String!
     name: String!
-  ): AuthenticationRegisterResponse
+  ): AuthenticationLoginResponse @rateLimit(limit: 5, duration: 60)
 
   updateStrategies(
     strategies: [AuthenticationStrategyInput]!

@@ -266,7 +266,7 @@ module.exports = () => {
         isVerified: true
       })
       */
-      await adminUser.$relatedQuery('groups').relate(adminGroup.id)
+      await admin('groups').relate(adminGroup.id)
 
       // Create Guest account
       WIKI.logger.info('Creating guest account...')
