@@ -38,13 +38,6 @@ module.exports = () => {
   app.use(favicon(path.join(WIKI.ROOTPATH, 'assets', 'favicon.ico')))
   app.use(express.static(path.join(WIKI.ROOTPATH, 'assets')))
 */
-  // ----------------------------------------
-  // View Engine Setup
-  // ----------------------------------------
-
-  app.set('views', path.join(WIKI.SERVERPATH, 'views'))
-  app.set('view engine', 'pug')
-
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -266,7 +259,7 @@ module.exports = () => {
         isVerified: true
       })
       */
-      await admin('groups').relate(adminGroup.id)
+      await adminUser.$relatedQuery('groups').relate(adminGroup.id)
 
       // Create Guest account
       WIKI.logger.info('Creating guest account...')

@@ -84,12 +84,6 @@ module.exports = async () => {
 
   app.use(mw.seo)
 
-  // ----------------------------------------
-  // View Engine Setup
-  // ----------------------------------------
-
-  app.set('views', path.join(WIKI.SERVERPATH, 'views'))
-  app.set('view engine', 'pug')
 
   app.use(bodyParser.json({ limit: '1mb' }))
   app.use(bodyParser.urlencoded({ extended: false, limit: '1mb' }))

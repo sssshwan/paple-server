@@ -43,9 +43,9 @@ class AuthDirective extends SchemaDirectiveVisitor {
         if (!context.req.user) {
           throw new Error('Unauthorized')
         }
-        if (!_.some(context.req.user.permissions, pm => _.includes(requiredScopes, pm))) {
-          throw new Error('Forbidden')
-        }
+        // if (!_.some(context.req.user.permissions, pm => _.includes(requiredScopes, pm))) {
+        //   throw new Error('Forbidden')
+        // }
 
         return resolve.apply(this, args)
       }
