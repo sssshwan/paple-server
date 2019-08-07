@@ -6,7 +6,7 @@ const EventEmitter = require('events')
 module.exports = {
   async init() {
     WIKI.logger.info('=======================================')
-    WIKI.logger.info(`= Wiki.js ${_.padEnd(WIKI.version + ' ', 29, '=')}`)
+    WIKI.logger.info(`======= ${_.padEnd('Paple server is started'+ ' ', 31, '=')}`)
     WIKI.logger.info('=======================================')
     WIKI.logger.info('Initializing...')
 
