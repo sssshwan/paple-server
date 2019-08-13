@@ -32,13 +32,13 @@ module.exports = {
       }
     })
 
-    mkdown.use(mdAnchor, {
-      slugify: s => uslug(s),
-      permalink: true,
-      permalinkClass: 'toc-anchor',
-      permalinkSymbol: '¶',
-      permalinkBefore: true
-    })
+    // mkdown.use(mdAnchor, {
+    //   slugify: s => uslug(s),
+    //   permalink: true,
+    //   permalinkClass: 'toc-anchor',
+    //   permalinkSymbol: '¶',
+    //   permalinkBefore: true
+    // })
 
     mkdown.use(mdAttrs)
 

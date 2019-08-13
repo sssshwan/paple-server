@@ -154,6 +154,10 @@ module.exports = class PageHistory extends Model {
         let valueBefore = null
         let valueAfter = null
 
+        console.log(prevPh)
+        console.log(history.total)
+        console.log(upperLimit)
+
         if (!prevPh && history.total < upperLimit) {
           actionType = 'initial'
         } else if (_.get(prevPh, 'path', '') !== ph.path) {
