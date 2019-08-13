@@ -112,6 +112,7 @@ module.exports = class PageHistory extends Model {
         'pageHistory.authorId',
         'pageHistory.action',
         'pageHistory.createdAt',
+        'pageHistory.content',
         {
           authorName: 'author.name'
         }
@@ -134,6 +135,7 @@ module.exports = class PageHistory extends Model {
           'pageHistory.authorId',
           'pageHistory.action',
           'pageHistory.createdAt',
+          'pageHistory.content',
           {
             authorName: 'author.name'
           }
@@ -154,17 +156,16 @@ module.exports = class PageHistory extends Model {
         let valueBefore = null
         let valueAfter = null
 
-        console.log(prevPh)
-        console.log(history.total)
-        console.log(upperLimit)
+        // if (!prevPh && history.total < upperLimit) {
+        //   actionType = 'initial'
+        // } else if (_.get(prevPh, 'path', '') !== ph.path) {
+        //   actionType = 'move'
+        //   valueBefore = _.get(prevPh, 'content', '')
+        //   valueAfter = ph.content
+        // }
 
-        if (!prevPh && history.total < upperLimit) {
-          actionType = 'initial'
-        } else if (_.get(prevPh, 'path', '') !== ph.path) {
-          actionType = 'move'
-          valueBefore = _.get(prevPh, 'path', '')
-          valueAfter = ph.path
-        }
+        valueBefore = _.get(prevPh, 'content', '')
+        valueAfter = ph.content
 
         res.unshift({
           versionId: ph.id,
