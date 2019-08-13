@@ -42,6 +42,8 @@ module.exports = class Page extends Model {
         publishEndDate: {type: 'string'},
         content: {type: 'string'},
         contentType: {type: 'string'},
+        thesisAuthor : {type: 'string'},
+        referenceLink : {type: 'string'},
 
         createdAt: {type: 'string'},
         updatedAt: {type: 'string'}
@@ -122,7 +124,9 @@ module.exports = class Page extends Model {
       render: 'string',
       title: 'string',
       toc: 'string',
-      updatedAt: 'string'
+      updatedAt: 'string',
+      thesisAuthor: 'string',
+      referenceLink: 'string',
     })
   }
 
@@ -197,6 +201,8 @@ module.exports = class Page extends Model {
       publishEndDate: opts.publishEndDate || '',
       publishStartDate: opts.publishStartDate || '',
       title: opts.title,
+      thesisAuthor: opts.thesisAuthor,
+      referenceLink: opts.referenceLink,
       toc: '[]'
     })
     const page = await WIKI.models.pages.getPageFromDb({
@@ -387,7 +393,9 @@ module.exports = class Page extends Model {
       render: page.render,
       title: page.title,
       toc: _.isString(page.toc) ? page.toc : JSON.stringify(page.toc),
-      updatedAt: page.updatedAt
+      updatedAt: page.updatedAt,
+      thesisAuthor: page.thesisAuthor,
+      referenceLink : page.referenceLink
     }))
   }
 

@@ -51,6 +51,8 @@ type PageMutation {
     publishStartDate: Date
     tags: [String]!
     title: String!
+    referenceLink: String
+    thesisAuthor: String
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   update(
@@ -66,6 +68,8 @@ type PageMutation {
     publishStartDate: Date
     tags: [String]
     title: String
+    referenceLink: String
+    thesisAuthor: String
   ): PageResponse @auth(requires: ["manage:pages", "manage:system"])
 
   delete(
@@ -119,6 +123,8 @@ type Page {
   creatorId: Int!
   creatorName: String!
   creatorEmail: String!
+  referenceLink: String
+  thesisAuthor: String
 }
 
 type PageHistory {
@@ -162,4 +168,6 @@ type PageListItem {
   privateNS: String
   createdAt: Date!
   updatedAt: Date!
+  referenceLink: String
+  thesisAuthor: String
 }

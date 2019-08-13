@@ -34,13 +34,15 @@ module.exports = {
         'path',
         { locale: 'localeCode' },
         'title',
-        'description',
+        'tldr',
         'isPublished',
         'isPrivate',
         'privateNS',
         'contentType',
         'createdAt',
-        'updatedAt'
+        'updatedAt',
+        'referenceLink',
+        'thesisAuthor'
       ])
     },
     async single (obj, args, context, info) {

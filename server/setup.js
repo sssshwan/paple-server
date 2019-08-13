@@ -120,7 +120,7 @@ module.exports = () => {
         theme: 'default',
         darkMode: false
       })
-      _.set(WIKI.config, 'title', 'Wiki.js')
+      _.set(WIKI.config, 'title', 'Paple.js')
 
       // Init Telemetry
       WIKI.kernel.initTelemetry()
@@ -259,7 +259,7 @@ module.exports = () => {
         isVerified: true
       })
       */
-      await adminUser.$relatedQuery('groups').relate(adminGroup.id)
+      //await adminUser.$relatedQuery('groups').relate(adminGroup.id)
 
       // Create Guest account
       WIKI.logger.info('Creating guest account...')

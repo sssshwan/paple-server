@@ -47,7 +47,8 @@ module.exports = {
   /* ignore setup */
   async bootMaster() {
     try {
-      if (WIKI.config.setup) {
+      //if (WIKI.config.setup) {
+      if (WIKI.config.setup){  
         WIKI.logger.info('Starting setup wizard...')
         require('../setup')()
       } else {

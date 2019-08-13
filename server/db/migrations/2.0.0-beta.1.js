@@ -114,7 +114,7 @@ exports.up = knex => {
       table.string('path').notNullable()
       table.string('hash').notNullable()
       table.string('title').notNullable()
-      table.string('description')
+      table.string('tldr')
       table.boolean('isPrivate').notNullable().defaultTo(false)
       table.boolean('isPublished').notNullable().defaultTo(false)
       table.string('privateNS')
@@ -126,6 +126,8 @@ exports.up = knex => {
       table.string('contentType').notNullable()
       table.string('createdAt').notNullable()
       table.string('updatedAt').notNullable()
+      table.string('thesisAuthor').notNullable()
+      table.string('referenceLink').notNullable()
     })
     // PAGE TREE ---------------------------
     .createTable('pageTree', table => {
