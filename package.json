@@ -45,7 +45,7 @@
     "js-binary": "^1.2.0",
     "js-yaml": "^3.13.1",
     "knew": "0.0.0",
-    "knex": "^0.19.0",
+    "knex": "^0.19.5",
     "lodash": "^4.17.15",
     "markdown-it": "^9.0.1",
     "markdown-it-abbr": "^1.0.4",
