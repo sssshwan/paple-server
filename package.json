@@ -13,7 +13,7 @@
   "dependencies": {
     "@bugsnag/node": "^6.3.1",
     "apollo-fetch": "^0.7.0",
-    "apollo-server-express": "^2.7.0",
+    "apollo-server-express": "^2.14.2",
     "auto-load": "^3.0.4",
     "axios": "^0.19.0",
     "bcryptjs-then": "^1.0.1",
