@@ -15,7 +15,7 @@
     "apollo-fetch": "^0.7.0",
     "apollo-server-express": "^2.7.0",
     "auto-load": "^3.0.4",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bcryptjs-then": "^1.0.1",
     "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
